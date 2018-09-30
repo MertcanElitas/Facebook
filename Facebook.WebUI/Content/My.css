@@ -1,0 +1,205 @@
+﻿.livesearch
+{
+
+    width:200px;
+    display:block;
+    padding:10px;
+    position:relative;
+
+
+}
+
+
+input#searchtxt{
+
+    position:relative;
+    margin-top:2px;
+    padding:5px;
+    margin-left:-10px;
+}
+
+li.livesearchli img{
+
+    width:50px;
+
+
+}
+
+
+ul#liveserachul{
+
+    position:absolute;
+    background:#222;
+    top:50px;
+    left:0px;
+    padding-left:40px;
+    list-style:none;
+    
+
+}
+
+/*ul#liveserachul li.close{
+
+    position:absolute;
+    color:white;
+    opacity:1 !important;
+    right:10px;
+    list-style:none;
+    top:0;
+    cursor:pointer;
+    z-index:10;
+
+}*/
+
+
+.userimg img{
+    margin-top:40px;
+    width:200px;
+
+
+}
+
+li.name{
+
+
+    display:block;
+    color:white;
+    margin:0 10px;
+    margin-top:15px;
+
+}
+
+
+/*li.frcountli{
+    color:white
+
+
+}*/
+
+
+.frnotif{
+    color:white;
+    margin-left:-60px;
+    margin-top:20px;
+}
+
+.frnotif.red {
+    color: red;
+    cursor: pointer;
+}
+
+li.frcountli{
+
+    position:absolute;
+   
+
+
+}
+
+ul.frnotiful{
+    position:absolute;
+    right:0;
+    top:50px;
+    background:#222;
+}
+
+
+li.frcountli img{
+    width: 50px;
+
+}
+
+li.frnotifli {
+    position:relative;
+    width: 300px;
+   background-color:#222;
+    padding: 10px;
+    margin-left: -120px;
+    margin-top: 17px;
+}
+
+
+span.frnotif > span{
+    display:inline-block;
+    margin-left:5px;
+}
+
+
+.friends {
+    width:150px;
+}
+
+li.msgcountli {
+    color: white;
+    margin-top: 17px;
+    margin-left: 10px;
+
+}
+
+.msgnotif.red{
+
+    color:red;
+
+}
+
+li.msgnotif span > span{
+    display:inline-block;
+    margin-left:5px;
+}
+
+
+
+li.msgnotifli  {
+    list-style:none;
+    width:300px;
+    display:inline-block;
+    padding:10px;
+}
+
+
+ul#msgnotiful{
+
+    position:absolute;
+    padding:0;
+    background:#222;
+    right:-10px;
+    top:30px;
+
+
+}
+
+
+    ul#msgnotiful li.close {
+        position: absolute;
+        color: white;
+        opacity: 1 !important;
+        right: 10px;
+        list-style: none;
+        top: 0;
+        cursor: pointer;
+        z-index: 10;
+    }
+
+
+li.msgnotifli img {
+    width:50px;
+
+}
+
+
+
+.wall textarea {
+    width:400px;
+    height:100px;
+    padding:10px;
+    border:2px solid blue;
+
+}
+
+body > .chatbox{
+
+    position:absolute;
+    left:-3000px;
+
+}
+

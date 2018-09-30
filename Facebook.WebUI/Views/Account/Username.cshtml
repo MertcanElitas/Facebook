@@ -1,0 +1,910 @@
+﻿    @using Facebook.Domains.Concrete
+@using Facebook.WebUI.SessionSetting
+
+
+
+<style>
+
+    .sendmsgparent {
+        width: 400px;
+        margin: 30px;
+        margin-left: 0px;
+    }
+
+    .wall textarea {
+        width: 400px;
+        height: 100px;
+        padding: 10px;
+        border: 2px solid blue;
+        margin-right: 10px;
+    }
+
+    .ta,
+    .ta:hover,
+    .ta:focus {
+        display: block;
+        background: #4267b2;
+        padding: 10px;
+        color: white;
+        font-weight: bold;
+        width: 150px;
+        text-align: center;
+        margin-top: 10px;
+        text-decoration: none;
+    }
+
+    .sendmsgnotif {
+        position: absolute;
+        bottom: 0px;
+        left: 180px;
+    }
+
+    .friendwall {
+        margin: 20px;
+    }
+
+        .friendwall img {
+            margin-right: 10px;
+            width: 50px;
+        }
+
+    .chat {
+        position: fixed;
+        bottom: 0;
+        right: 30px;
+    }
+
+        .chat ul li {
+            cursor: pointer;
+            margin: 10px;
+            list-style: none;
+            padding: 10px;
+        }
+
+            .chat ul li img {
+                width: 30px !important;
+            }
+
+    .panel-default > .panel-heading {
+        color: black;
+        background-color: #4267b2;
+        border-color: #dddddd;
+    }
+
+
+    .thumbnail {
+        padding: 0px;
+    }
+
+    .panel {
+        position: relative;
+    }
+
+        .panel > .panel-heading:after, .panel > .panel-heading:before {
+            position: absolute;
+            top: 11px;
+            left: -16px;
+            right: 100%;
+            width: 0;
+            height: 0;
+            display: block;
+            content: " ";
+            border-color: transparent;
+            border-style: solid solid outset;
+            pointer-events: none;
+        }
+
+        .panel > .panel-heading:after {
+            border-width: 7px;
+            border-right-color: #f7f7f7;
+            margin-top: 1px;
+            margin-left: 2px;
+        }
+
+        .panel > .panel-heading:before {
+            border-right-color: #ddd;
+            border-width: 8px;
+        }
+
+    .newrow {
+        margin-left: 320px;
+        margin-top: -160px;
+    }
+</style>
+
+@{
+    ViewBag.Title = ViewBag.username;
+}
+
+@{
+    var data = SessionSet<Users>.CurrentUser("login");
+}
+<div class="row">
+
+    <div class="col-xs-12 col-md-6">
+
+        <p class="userimg">
+
+
+            <img src="~/Uploads/@ViewBag.userimage" />
+
+        </p>
+        <h2>@ViewBag.ViewingFullName </h2>
+
+        @if (ViewBag.userType == "guest")
+        {
+            <div class="friends">
+                @if (ViewBag.NotFirends == "Pending")
+                {
+                    <div class="arefriendsdiv alert alert-info">
+                        <p>Arkadaşlık isteği beklemede</p>   @*Arkadaşlık isteği beklemede*@
+                    </div>
+                }
+                else if (ViewBag.NotFirends == "True")
+                {
+                    <div class="arefriendsdiv alert alert-info">
+                        <a href="#" class="addfriend">Arkadaş Ekle</a>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="arefriendsdiv alert alert-info">
+                        <span class="glyphico glyphicon-thumbs-up"></span> Arkadaşsınız @*Arkadaşsınız*@
+                    </div>
+
+                }
+            </div>
+        }
+
+
+
+        <div class="friends  @data.Username alert alert-info">
+            <span>@ViewBag.FCount</span> Arkadaş
+        </div>
+
+
+    </div>
+
+    <div class="col-xs-12 col-md-6 wall">
+
+        @if (ViewBag.userType == "owner")
+        {
+            <h3>Bir şeyler Paylaş</h3>
+
+            if (ViewBag.WallMessage == "")
+            {
+                <textarea id="say@(ViewBag.UserId)" placeholder="Bir şeyler yaz"></textarea>
+            }
+            else
+            {
+                <textarea id="say@(ViewBag.UserId)" placeholder="Bir şeyler yaz">@ViewBag.WallMessage</textarea>
+            }
+
+            <a href="#" id="sendsay" class="ta" data-id="@ViewBag.UserId">Paylaş</a>
+            <div class="sendmsgnotif alert alert-success hide">Mesaj Gönder.</div>
+
+        }
+
+
+
+        @if (ViewBag.userType == "guest")
+        {
+            if (ViewBag.NotFirends == null) /*Bu durumda profile giren misafir benim arkadaşım durumunda*/
+            {
+                <div class="sendmsgparent">
+                    <div class="msgtextarea">
+                        <textarea id="msgarea"></textarea>
+                    </div>
+                    <a href="#" id="sendmsg" class="ta">Mesaj Gönder</a>
+                    <div class="sendmsgnotif alert alert-success hide">Mesaj Gönderildi.</div>
+                </div>
+            }
+        }
+
+    </div>
+
+
+
+</div>
+@*Arkadaşlarımın Duvarı Ben bUrayı paylaştıkları yapucam*@
+
+<div class="row friendwall">
+
+    <div class="col-md-12 newrow">
+        <h3 style="margin-left:20px; margin-top:10px;">Arkadaşlarım neler paylaşmış</h3>
+        @if (Enumerable.Count(ViewBag.Walls) > 0)
+    {
+
+
+        foreach (var item in ViewBag.Walls)
+        {
+
+
+            <div class="container newpost" id="@(item.postId)" data-div-id="@(item.postId)">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="thumbnail">
+                            <img class="img-responsive user-photo" src="~/Uploads/@(item.UserId).jpg">
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <strong>@item.username</strong> <span class="text-muted">@item.CreatedDate</span>
+                            </div>
+                            <div class="panel-body">
+                                @item.Text
+
+                                @if (data.Id == item.UserId)
+                            {
+                                <a id="delete" data-postid="@item.postId" class="btn btn-danger btn-xs pull-right">Sil<span class="glyphicon glyphicon-trash"></span></a>
+
+                        }
+
+                                <button type="button" class="btn btn-warning btn-xs pull-right" data-toggle="modal" data-target="#mycomment" data-comment-id="@item.postId">Yorumlar<span class="glyphicon glyphicon-comment"></span></button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                </div>
+            </div>
+    }
+
+}
+
+else
+{
+    <h3>Şuan Kimseyle Arkadaş değilsiniz</h3>
+}
+    </div>
+
+</div>
+
+
+
+<div class="chat @data.Username">
+    <ul></ul>
+</div>
+
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+
+
+@section Scripts{
+    <script src="~/Scripts/jquery.signalR-2.3.0.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            //LiveSearch JQuery
+
+            $("input#searchtxt").keyup(function () {  //id si searchtext olan inputa bir değer girilme anını yakaladık.
+
+                var searchVal = $("input#searchtxt").val();  //Girildiği andaki değerleri elde ettik
+
+                $("ul#liveserachul").empty();        //Oncelikle Listeyi boşalttık Çünkü her yeni değerde liste değişicek
+
+                if (searchVal == "" || searchVal == " ") return false; //null mı yoksa boşluk karakteri varmı diye kontrol ettik va ise false donduk
+
+                var url = "/Profile/LiveSearch";   //Değer girildiği anda post edilecek url i belirledik
+
+                $.post(url, { searchVal: searchVal }, function (data) {  // Profile/LiveSearch e post ettik her yeni değer girildiğinde post edicek parametreyi yolladık donen json veriyi yakaladık
+
+                    if (data.length > 0) {
+
+                        /*  $("ul#liveserachul").append("<li class=close>x</li>");*/   //Her bir satıra kapama işareti ekledik X
+
+                    }
+
+
+                    for (var i = 0; i < data.length; i++) {  //Bize bir array geldiği için bu array in içinde donduk
+                        var obj = data[i];  //Gelen her degeri obj nesnesine atadık
+
+                        $("ul#liveserachul").append('<li class=livesearchli><a href="/' + obj.Username + '"><img src="/Uploads/' + obj.UserId + '.jpg"/>' + ' ' + obj.Firstname + ' ' + obj.Lastname + '</a></li>');
+
+                        //ul listesine livesearchli classlı bir satır atadık ve bu satıra bir href verdik ayrıca bulunan kullanıcının image ini getirdik Fotografın yanına bilgilerini bastık
+                    }
+
+
+
+                })
+
+
+            })
+
+
+            //LiveSerach listedeki iptal ettiğim kapama iconu işlemleri
+            $("body").on("click", "ul#liveserachul li.close", function () {
+
+
+                $("ul#liveserachul").empty();
+                $("input#searchtxt").val("");
+            })
+
+
+
+
+            //Hub bağlantısı kurulu
+            var hub = $.connection.echo;
+            
+
+            //Bu kısım client tarafında js çalıştırmak için oluşturuldu
+            hub.client.test = function (data) {
+                console.log(data);
+            }
+
+
+
+            //Yukardaki Kırmızı Arkadaşlık isteği bildirimi
+            hub.client.frnotify = function (f, count) {
+
+                //$('span#friendcount').text(count);
+                $("span.frnotif").text(count);
+                $("span.frnotif").addClass("red");
+
+
+
+            }
+
+
+            //Arkadaş olduktan sonra yukardaki kırmızı alanı eski haline çevirdik
+            hub.client.frcount = function (username,count) {
+
+                if (count>0) {
+                    $("span.frnotif").text(count);
+                } else {
+                    $("span.frnotif").text("");
+                    $("span.frnotif").addClass("red");
+                }
+
+            }
+
+
+            hub.client.fcount = function (u1,u2,count1,count2) {
+
+                if (count1 > 0) {
+                    $("div.friends." + u1 + "> span").text(count1);
+                } else {
+                    $("div.friends." + u1 + "> span").text("0");
+                }
+
+
+                if (count2>0) {
+                    $("div.friends." + u2 + "> span").text(count2);
+                }
+                else {
+                    $("div.friends." + u2 + "> span").text("0");
+                }
+
+            }
+
+
+            hub.client.msgcount = function (friend, messagecount) {
+
+                if (messagecount > 0) {
+                    $("span.msgnotif." + friend + ">span").text(messagecount);
+
+                    $("span.msgnotif." + friend).addClass("red");
+
+                } else {
+
+                    $("span.msgnotif." + friend + ">span").text("");
+
+                    $("span.msgnotif." + friend).addClass("red");
+
+                }
+
+
+
+            }
+
+
+            hub.client.guncelwallpost = function (id,text,date,username) {
+
+
+
+                if (id!=null) {
+
+
+                    $(".newpost").prepend('<div class="container"><div class="row"> <div class="col-sm-12"></div></div> <div class="row"> <div class="col-sm-1"><div class="thumbnail"><img class="img-responsive user-photo" src="/Uploads/'+id+'.jpg"></div></div><div class="col-sm-5"><div class="panel panel-default"><div class="panel-heading"><strong>' + username + '</strong> <span class="text-muted">' + date + '</span></div><div class="panel-body">' + text + '</div></div></div> </div></div>')
+
+                }
+            }
+
+
+
+            hub.client.deletep = function (mode) {
+
+                if (mode!=null) {
+
+
+                    $("div#" + mode).hide();
+
+                }
+            }
+
+
+            //hub.client.getonlinefriends = function (user,data) {
+
+            //    var result = JSON.parse(data);
+
+            //    for (var i = 0; i < result.length; i++) {
+            //        var obj = result[i];
+
+
+            //        $(".chat." + user + "> ul ").append('<li class="cf' + obj.id + '"data-id="' + obj.id + '"><img src="/Uploads/' + obj.id + '.jpg"/>' + obj.friend + '</li>');
+
+
+            //        var chatbox = $("body > .chatbox").clone();
+
+            //        chatbox.attr("data-id", obj.id);
+            //        chatbox.attr("id", "cb" + obj.id);
+            //        chatbox.addClass("hidden");
+
+            //        chatbox.find("a.sendchat").attr("data-friend", obj.friend);
+
+            //        chatbox.find("a.sendchat").attr("data-id", obj.id);
+            //        chatbox.find("div.chatboxtext").attr("id", "cbtext", obj.id);
+
+
+            //        $("#chb" + user).append(chatbox);
+            //        $("#chb" + user + "#cb" + obj.id + "h4>span").html('<img src="/Uploads/"' + obj.id + '.jpg">');
+
+
+            //    }
+
+            //}
+
+
+
+
+
+            //hub.client.updatechat = function (user, data) {
+
+            //    var result = JSON.parse(data);
+
+
+            //    $(".chat." + user + "> ul ").empty();
+
+
+
+            //    for (var i = 0; i < result.length; i++) {
+            //        var obj = result[i];
+
+
+            //        $(".chat." + user + "> ul ").append('<li class="cf' + obj.id + '"data-id="' + obj.id + '"><img src="/Uploads/' + obj.id + '.jpg"/>' + obj.friend + '</li>');
+
+
+            //        if (!($(".chatboxholder #cb" + obj.id).length)) {
+
+
+
+
+            //            var chatbox = $("body > .chatbox").clone();
+
+            //            chatbox.attr("data-id", obj.id);
+            //            chatbox.attr("id", "cb" + obj.id);
+            //            chatbox.addClass("hidden");
+
+            //            chatbox.find("a.sendchat").attr("data-friend", obj.friend);
+
+            //            chatbox.find("a.sendchat").attr("data-id", obj.id);
+            //            chatbox.find("div.chatboxtext").attr("id", "cbtext", obj.id);
+
+
+            //            $("#chb" + user).append(chatbox);
+            //            //$("#chb" + user + "#cb" + obj.id + "h4>span").html('<img src="/Uploads/"' + obj.id + '.jpg">');
+            //            $(".spnimg").html('<img src="/Uploads/"' + obj.id + '.jpg">');
+
+            //        }
+
+            //    }
+            //}
+
+
+
+
+
+
+
+
+            
+
+
+
+            //Hub a bağlantı başlatıldı yer
+            $.connection.hub.start().done(function () {
+
+
+
+
+                hub.server.hello("Signalr Working")
+            })
+
+
+
+            $("a.addfriend").click(function (e) {
+
+                e.preventDefault();
+
+
+                var friend = '@ViewBag.Username';
+
+                var url ="/Profile/AddFriend"
+
+
+                $.post(url, { friend: friend }, function (data) {
+
+
+                    $('.arefriendsdiv').removeClass("alert-info").addClass("alert-info").html('<p>Arkadaşlık isteği beklemede</p>')
+
+                }).done(function () {
+
+                    hub.server.notify(friend)
+
+                })
+
+            })
+
+
+
+
+            //Display unread messages
+
+            $("body").on("click", "span.msgnotif.red", function () {
+
+                $("ul#msgnotiful").empty();
+
+
+                 var user = '@ViewBag.Username';
+
+                var url = "/Profile/DisplayUnreadMessages";
+
+                $.post(url, {}, function (data) {
+
+                    if (data.length>0) {
+                        $("ul#msgnotiful").append("<li class=close>X</li>")
+                    }
+
+
+                    for (var i = 0; i < data.length; i++) {
+                        var obj = data[i];
+
+                        $("ul#msgnotiful").append('<li class=msgnotifli><a href="/' + obj.FromUsername + '"><img src="/Uploads/' + obj.From + '.jpg"/></a> ' + '  ' + obj.Message + '</li>');
+
+                    }
+
+
+                }).done(function () {
+                    hub.server.notifyOfMessegeOwner()
+
+
+                })
+
+
+
+            })
+
+            //Kapat icon js
+            $("body").on("click", "ul#msgnotiful li.close", function () {
+
+
+                $("ul#msgnotiful").empty();
+
+            })
+
+
+
+
+            //Post Delete Js
+            $("body").on("click", "#delete", function () {
+
+                var $this=$(this)
+
+                var postid = $this.data("postid")
+
+                //var dv = $this.parent("div.newpost").data("div-id");
+
+                //var divid = $.find(dv).data("div-id");
+
+
+
+
+                var url="/Profile/DeletPost"
+
+                $.post(url, { postid: postid }, function (newpost) {
+
+                    $("div.newrow").html(newpost)
+
+                }).done(function () {
+
+                })
+
+
+
+            })
+
+
+
+
+
+
+            //Display Friends Request Arkadaşlık İsteklerini görüntüleme
+
+            $("body").on("click", "span.frnotif", function () {
+
+                $("ul#frnotiful").empty();
+
+                var url = "/Profile/DisplayFriendRequests";
+
+                $.post(url, {}, function (data) {
+
+                    if (data.length > 0) {
+
+                    }
+
+                    for (var i = 0; i < data.length; i++) {
+                        var obj = data[i]
+
+                        $("ul#frnotiful").append('<li class=frnotifli><a href="/' + obj.Username + '"><img src="/Uploads/' + obj.Id + '.jpg"/>' + ' ' + obj.Name + ' ' + obj.LastName + '</a>' + '<a class=accept href=# data-id="' + obj.Id + '"><span class="glyphicon glyphicon-ok"></span></a>' + '    ' + '<a class=decline href=# data-id="' + obj.Id + '"><span class="glyphicon glyphicon-remove"></span></a></li> &nbsp; &nbsp; &nbsp; &nbsp;');
+
+                    }
+
+
+                })
+
+
+            })
+
+
+
+
+            //Accept friend request  Arkadaşlık İstek Kabul
+
+            $("body").on("click", "a.accept", function (e) {
+
+                e.preventDefault();
+
+                var $this = $(this);
+
+                var friendid = $this.data("id");
+
+                var url = "/Profile/AcceptFriendRequest";
+
+                $.post(url, { friendid: friendid }, function (data) {
+
+
+
+
+                }).done(function () {
+                    $this.parent().fadeOut("fast");
+                    hub.server.getFrcount();   //furkanın anlık arkaşlık isteği listesi bilgisine ulaşıldı
+                    hub.server.getFcount(friendid); //Arkadaşlık isteğini atan ve kabul edem kişilerin arkadaş sayıları bilgisne ulaşıldı
+                    })
+
+            } )
+
+
+            //Arkadaşlık isteği ret
+            $("body").on("click", "a.decline", function (e) {
+                e.preventDefault();
+
+                var $this= $(this);
+
+                var friendid = $this.data("id")
+
+                var url = "/Profile/DeclineFrinedRequest";
+
+                $.post(url, { friendid: friendid }, function () {
+
+
+                }).done(function () {
+                    $this.parent().fadeOut("fast")
+                    hub.server.getFrcount();
+                })
+
+
+            })
+
+
+            //Mesaj Gönderme İşlemi
+            $("body").on("click", "a#sendmsg", function (e) {
+                e.preventDefault();
+
+                var $this = $(this);
+
+
+
+
+                var friend = '@ViewBag.Username';
+
+                var text = $("#msgarea").val();
+
+                var url = "/Profile/SenMessage"
+
+                $.post(url, { friend : friend, text: text }, function (data) {
+
+
+
+
+                }).done(function () {
+                    hub.server.notifyOfMessage(friend);
+                    $("#msgarea").val("");
+                    $this.parent().find(".sendmsgnotif").removeClass("hide");
+                    setTimeout(function () {
+
+                        $this.parent().find(".sendmsgnotif").fadeOut("fast", function () {
+
+                            $this.parent().find(".sendmsgnotif").addClass("hide");
+
+                        });
+
+                    },2000)
+
+                })
+
+
+            })
+
+
+
+            $("body").on("click", "a#sendsay", function (e) {
+
+                e.preventDefault();
+
+                var $this = $(this);
+
+                var id = $(this).data("id");
+
+                var text = $(this).parent().find("textarea").val();
+
+                var url ="/Profile/AddPost"
+
+
+                $.post(url, { id: id, text: text }, function (newposts) {
+
+                    $("div.newrow").html(newposts)
+
+                }).done(function () {
+                    //hub.server.guncelwall(newposts);
+
+
+                })
+
+            })
+
+
+
+
+        })
+
+    </script>
+}
+
+
+@Comment.popup(id: "mycomment")
+
+<script>
+    var poid = -1;
+    //Popup Ayağa Kaldırılırken görüntülendiği anda body classına sahip olan divi load metoduyla doldurduk
+    $(function () {
+
+        $('#mycomment').on('show.bs.modal', function (e) {
+
+
+            var btn = $(e.relatedTarget);//O An tıklanan buton
+
+            poid = btn.data("comment-id")
+
+            $(".modal-body").load("/Profile/ShowComments/" + poid);
+
+        })
+
+
+
+
+
+
+    })
+
+
+
+    function doComment(btn, e, commentid, spanid) {
+
+        var button = $(btn);
+        var mode = button.data("edit-mode");
+
+        if (e == "edit_clicked") {
+
+            if (mode == false) {
+                button.data("edit-mode", true)
+                button.removeClass("btn-warning")
+                button.addClass("btn-success")
+                var btnspan = button.find("span")
+                btnspan.removeClass("glyphicon-edit")
+                btnspan.addClass("glyphicon-ok")
+
+                $(spanid).attr("contenteditable", true);
+                $(spanid).focus();
+            }
+            else {
+                button.data("edit-mode", false)
+                button.removeClass("btn-success")
+                button.addClass("btn-warning")
+                var btnspan = button.find("span")
+                btnspan.removeClass("glyphicon-ok")
+                btnspan.addClass("glyphicon-edit")
+
+
+                $(spanid).attr("contenteditable", false);
+
+                var text = $(spanid).text();
+
+                var url = "/Profile/UpdateComment"
+
+                $.post(url, { text: text, id: commentid }, function (data) {
+
+
+                    if (data.result) {
+
+                        // $(".modal-body").load("/Profile/ShowComments/" + poid);
+
+                    } else {
+                        alert("Yorum Güncelenemedi")
+                    }
+
+                })
+
+
+
+
+
+            }
+
+
+        }
+        else if (e == "delete_clicked") {
+
+
+            var url = "/Profile/DeleteComment"
+
+            $.post(url, { id: commentid }, function () {
+
+
+                $(".modal-body").load("/Profile/ShowComments/" + poid);
+            })
+
+        }
+
+    }
+
+
+    function AddCom() {
+
+        var url = "/Profile/AddComment"
+
+        var comment = $("#new_comment").val();
+
+        $.post(url, { text: comment, id: poid }, function () {
+
+            $(".modal-body").load("/Profile/ShowComments/" + poid)
+
+        })
+
+    }
+
+
+</script>
+

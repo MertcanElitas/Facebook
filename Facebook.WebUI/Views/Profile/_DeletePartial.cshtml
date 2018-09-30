@@ -1,0 +1,54 @@
+﻿@using Facebook.WebUI.ViewModel
+@using Facebook.WebUI.SessionSetting
+@using Facebook.Domains.Concrete
+@model List<PostListViewModel>
+
+@{
+    var data = SessionSet<Users>.CurrentUser("login");
+}
+
+@foreach (var item in Model)
+{
+
+
+    <div class="row">
+        <div class="col-sm-12">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="thumbnail">
+                <img class="img-responsive user-photo" src="~/Uploads/@(item.UserId).jpg">
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>@item.username</strong> <span class="text-muted">@item.CreatedDate</span>
+                </div>
+                <div class="panel-body">
+                    @item.Text
+
+                    @if (data.Id == item.UserId)
+                    {
+                        <a id="delete" data-postid="@item.postId" class="btn btn-danger btn-xs pull-right">Sil<span class="glyphicon glyphicon-trash"></span></a>
+
+                    }
+
+                    <button type="button" class="btn btn-warning btn-xs pull-right" data-toggle="modal" data-target="#mycomment" data-comment-id="@item.postId">Yorumlar<span class="glyphicon glyphicon-comment"></span></button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+
+
+
+}
+

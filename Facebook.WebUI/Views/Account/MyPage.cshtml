@@ -1,0 +1,63 @@
+﻿@using Facebook.Domains.Concrete
+@model User
+@{
+    ViewBag.Title = "MyPage";
+}
+
+<h2>@Model.Username</h2>
+
+
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+
+            $("input#searchtxt").keyup(function () {  //id si searchtext olan inputa bir değer girilme anını yakaladık.
+
+                var searchVal = $("input#searchtxt").val();  //Girildiği andaki değerleri elde ettik
+
+                $("ul#liveserachul").empty();        //Oncelikle Listeyi boşalttık Çünkü her yeni değerde liste değişicek
+
+                if (searchVal == "" || searchVal == " ") return false; //null mı yoksa boşluk karakteri varmı diye kontrol ettik va ise false donduk
+
+                var url = "/Profile/LiveSearch";   //Değer girildiği anda post edilecek url i belirledik
+
+                $.post(url, { searchVal: searchVal }, function (data) {  // Profile/LiveSearch e post ettik her yeni değer girildiğinde post edicek parametreyi yolladık donen json veriyi yakaladık
+
+                    if (data.length > 0) {
+
+                      /*  $("ul#liveserachul").append("<li class=close>x</li>");*/   //Her bir satıra kapama işareti ekledik X
+
+                    }
+
+
+                    for (var i = 0; i < data.length; i++) {  //Bize bir array geldiği için bu array in içinde donduk
+                        var obj = data[i];  //Gelen her degeri obj nesnesine atadık
+
+                        $("ul#liveserachul").append('<li class=livesearchli><a href="/' + obj.Username + '"><img src="/Uploads/' + obj.UserId + '.jpg"/>' + ' ' + obj.Firstname + ' ' + obj.Lastname + '</a></li>');
+
+                        //ul listesine livesearchli classlı bir satır atadık ve bu satıra bir href verdik ayrıca bulunan kullanıcının image ini getirdik Fotografın yanına bilgilerini bastık
+                    }
+
+
+
+                })
+
+
+            })
+
+
+            $("body").on("click", "ul#liveserachul li.close", function () {
+
+
+                $("ul#liveserachul").empty();
+                $("input#searchtxt").val("");
+            })
+
+        })
+
+    </script>
+}

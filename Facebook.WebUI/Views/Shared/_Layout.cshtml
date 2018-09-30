@@ -1,0 +1,167 @@
+﻿@using Facebook.WebUI.SessionSetting
+@using Facebook.Domains.Concrete
+
+
+
+@{ 
+    var data = SessionSet<Users>.CurrentUser("login");
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/My.css" rel="stylesheet" />
+    <style>
+
+        div.chatbox{
+            position:absolute;
+            left:-3000px;
+        }
+
+
+        .chatboxholder{
+
+            position:fixed;
+            bottom:0;
+            right:130px;
+            width:100%;
+            height:50px;
+
+
+        }
+        .navbar-inverse {
+            background-color: #4267b2;
+        }
+        .chatbox{
+            width:300px;
+            height:400px;
+            background:#222;
+            position:absolute;
+            bottom:0;
+            right:0;
+
+
+        }
+
+
+        .chatbox h4{
+            position:absolute;
+            top:-65px;
+            left:0;
+            z-index:5;
+            padding:5px;
+
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="navbar  navbar-inverse navbar-fixed-top ">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <img src="~/Uploads/fa.png" height="40px"/ >   
+                @Html.ActionLink("Facebook", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" ,style="color:white"})
+
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+
+
+
+                    @if (SessionSet<Users>.CurrentUser("login") == null)
+    {
+                <li>@Html.ActionLink("Kayıt Ol", "CreateAccount", "Account", new { style = "color:white" })</li>
+}
+
+
+
+                    @if (SessionSet<Users>.CurrentUser("login") != null)
+    {
+
+                <li class="livesearch navbar-left">
+                    <input type="text" class="searchtext" id="searchtxt" placeholder="Arkadaş Ara" />
+                    <ul id="liveserachul"></ul>
+                </li>
+
+                <li class="frcountli">
+                    @if (ViewBag.FrCount != null)
+    {
+                <span class="glyphicon glyphicon-user frnotif ">  </span> <span id="friendcount">@ViewBag.FrCount</span>
+}
+else
+{
+                <span class="glyphicon glyphicon-user frnotif "> 0 </span>
+}
+                    <ul id="frnotiful"></ul>
+                </li>
+                <li class="msgcountli">
+                    @if (ViewBag.MsgCount > 0)
+    {
+                <span class="glyphicon glyphicon-comment msgnotif red @data.Username"><span>@ViewBag.MsgCount</span></span>
+}
+else
+{
+                <span class="glyphicon glyphicon-comment msgnotif @data.Username"><span></span></span>
+}
+                    <ul id="msgnotiful"></ul>
+                </li>
+
+
+                <li class="name">@ViewBag.Fullname</li>
+                <li>@Html.ActionLink("Logout", "Logout", "Account", new { style = "color:white" })</li>
+}
+
+
+
+
+
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        @*<footer>
+                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </footer>*@
+    </div>
+    @if (data != null)
+    {
+        <div class="chatboxholder" id="chb@(data.Username)"></div> 
+
+
+        <div class="chatbox">
+
+            <h4><span class="spnimg"></span></h4>
+
+            <div class="chatboxtext"></div>
+
+            <textarea class="chaattextarea"></textarea>
+            <br />
+            <a href="#" class="sendchat">Send</a>
+        </div>
+    }
+
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

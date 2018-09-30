@@ -1,0 +1,87 @@
+﻿@using Facebook.WebUI.ViewModel
+@using Facebook.Domains.Concrete
+@using Facebook.WebUI.SessionSetting
+
+@model List<CommentListViewModel>
+
+@{
+    var sesuser = SessionSet<Users>.CurrentUser("login");
+}
+@foreach (var item in Model)
+{
+
+
+    <div class="media">
+        <div class="media-left media-middle">
+            <div class="media-object">
+                <span class="glyphicon glyphicon-comment"></span>
+            </div>
+        </div>
+        <div class="media-body">
+            <span class="col-md-10" id="comment_text_@item.CommentId" contenteditable="false">
+                @item.ComText
+            </span>
+            @if (sesuser.Id == item.UserId)
+            {
+                <span class="col-md-2 text-right">
+                    <button type="button" class="btn btn-warning btn-xs" data-edit-mode="false" onclick="doComment(this,'edit_clicked',@item.CommentId,'#comment_text_@item.CommentId')"><span class="glyphicon glyphicon-edit"></span> </button>
+                    <button type="button" id="del" class="btn btn-danger btn-xs" data-com-id="@item.CommentId" onclick="doComment(this,'delete_clicked',@item.CommentId,'#comment_text_@item.CommentId')"><span class="glyphicon glyphicon-trash"> </span> </button>
+                </span>
+            }
+
+            <br />
+            <small class="col-md-12 text-right">
+                <span class="glyphicon glyphicon-time"></span>@item.CreatedDate
+                <span class="glyphicon glyphicon-user"></span>@item.username
+            </small>
+
+        </div>
+    </div>
+
+}
+@if (sesuser != null)
+{
+    <br /><br /><br />
+    <div class="row">
+
+
+        <div class="col-lg-6">
+            <div class="input-group">
+                <input type="text" id="new_comment" class="form-control" placeholder="Yorum yap">
+                <span class="input-group-btn">
+                    <button class="btn btn-success" id="newcom" onclick="AddCom()" type="button">
+                        Yorum Yap
+                        <span class="glyphicon glyphicon-send"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+
+
+
+
+@*<script>
+
+        $("body").on("click", "#del", function () {
+
+            var $this=$(this)
+
+            var comid = $this.data("com-id");
+
+            var url = "/Profile/DeleteComment";
+
+            $.post(url, { id: comid }, function () {
+
+                $this.
+
+            })
+
+
+        })
+
+    </script>*@
